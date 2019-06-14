@@ -75,7 +75,7 @@ class UserAgent():
          # Noise process
         self.exploration_mu = 0
         self.exploration_theta = 0.15
-        self.exploration_sigma = 0.25
+        self.exploration_sigma = 0.2
         self.noise = OUNoise(self.action_dim, self.exploration_mu, self.exploration_theta, self.exploration_sigma)
 
         # Replay memory
@@ -85,7 +85,7 @@ class UserAgent():
 
         # Algorithm parameters
         self.gamma = 0.99  # discount factor
-        self.tau = 0.001  # for soft update of target parameters
+        self.tau = 0.01  # for soft update of target parameters
         
         self.total_reward = 0
         self.count = 0
@@ -116,14 +116,12 @@ class UserAgent():
         if self.score > self.best_score:
             self.best_score = self.score
             self.best_w = [self.actor_local.model.get_weights(), self.critic_local.model.get_weights()]
-#         elif self.best_w is not None:
-#             self.actor_local.model.set_weights(self.best_w[0])
-#             self.critic_local.model.set_weights(self.best_w[1])
         
         self.memory.add(self.last_state, action, reward, next_state, done)
         if (len(self.memory) > self.batch_size):
             experience = self.memory.sample()
             self.learn(experience)
+            
             
         self.last_state = next_state
     
@@ -167,3 +165,8 @@ class UserAgent():
 
         new_weights = self.tau * local_weights + (1 - self.tau) * target_weights
         target_model.set_weights(new_weights)
+        
+    def set_best(self):
+        if self.best_w is not None:
+            self.actor_local.model.set_weights(self.best_w[0])
+            self.critic_local.model.set_weights(self.best_w[1])

@@ -45,7 +45,7 @@ class Actor:
         # 添加一个正则？
         # loss += K.sum(K.abs(self.model.trainable_weights()))
         
-        optimizer = optimizers.Adam(lr=1e-3)
+        optimizer = optimizers.Adam(lr=1e-4)
         update_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         
         # 外面调用的API
