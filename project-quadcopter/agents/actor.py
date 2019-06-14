@@ -16,7 +16,7 @@ class Actor:
         
     def build_model(self):
         states = layers.Input(shape=(self.state_dim,), name='states')
-        
+        # , kernel_regularizer=layers.regularizers.l2(1e-6)
         net = layers.Dense(units=100, kernel_regularizer=layers.regularizers.l2(1e-6))(states)
         net = layers.BatchNormalization()(net)
         net = layers.Activation('relu')(net)
@@ -27,7 +27,7 @@ class Actor:
         # net = layers.Dense(units=20, activation='relu')(net)  
         # range [0, 1]
         raw_actions = layers.Dense(units=self.action_dim, \
-                                   kernel_initializer=layers.initializers.RandomUniform(minval=-0.003, maxval=0.003), \
+                                   # kernel_initializer=layers.initializers.RandomUniform(minval=-0.0003, maxval=0.0003), \
                                    activation='sigmoid', \
                                    name='raw_actions')(net)
         
@@ -45,7 +45,7 @@ class Actor:
         # 添加一个正则？
         # loss += K.sum(K.abs(self.model.trainable_weights()))
         
-        optimizer = optimizers.Adam(lr=1e-4)
+        optimizer = optimizers.Adam(lr=1e-3)
         update_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         
         # 外面调用的API

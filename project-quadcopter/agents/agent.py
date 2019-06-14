@@ -25,6 +25,9 @@ class ReplayMemory:
     def sample(self):
         return random.sample(self.buffer, self.batch_size)
     
+    def reset(self):
+        self.buffer.clear()
+    
     def __len__(self):
         return len(self.buffer)
 
@@ -122,7 +125,6 @@ class UserAgent():
             experience = self.memory.sample()
             self.learn(experience)
             
-            
         self.last_state = next_state
     
     # 进行一次动作的预测
@@ -143,10 +145,10 @@ class UserAgent():
         Q_next = self.critic_target.model.predict_on_batch([next_state, next_action])
         
         # 如果下一次是done状态的话，不计入动作值中
-        Q_current_label = rewards + self.gamma*Q_next*(1-dones)
+        Q_label = rewards + self.gamma*Q_next*(1 - dones)
         
         # 训练critic
-        self.critic_local.model.train_on_batch(x=[states, actions], y=Q_current_label)
+        self.critic_local.model.train_on_batch(x=[states, actions], y=Q_label)
         
         # 训练actor
         action_grad = np.reshape(self.critic_local.get_action_gradients([states, actions, 0]), (-1, self.action_dim))
