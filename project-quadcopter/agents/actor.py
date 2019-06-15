@@ -26,9 +26,9 @@ class Actor:
         
         # net = layers.Dense(units=20, activation='relu')(net)  
         # range [0, 1]
-        raw_actions = layers.Dense(units=self.action_dim, \
-                                   # kernel_initializer=layers.initializers.RandomUniform(minval=-0.0003, maxval=0.0003), \
-                                   activation='sigmoid', \
+        raw_actions = layers.Dense(units=self.action_dim,
+                                   kernel_initializer=layers.initializers.RandomUniform(minval=-3e-3, maxval=3e-3),
+                                   activation='sigmoid',
                                    name='raw_actions')(net)
         
         actions = layers.Lambda(lambda x: (x*self.action_range)+self.action_low,
@@ -45,7 +45,7 @@ class Actor:
         # 添加一个正则？
         # loss += K.sum(K.abs(self.model.trainable_weights()))
         
-        optimizer = optimizers.Adam(lr=1e-3)
+        optimizer = optimizers.Adam(lr=1e-4)
         update_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         
         # 外面调用的API
